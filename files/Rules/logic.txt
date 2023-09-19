@@ -1,0 +1,235 @@
+Luca
+#Basic Structure
+
+Import [Project Table] and [Project Feature Data] using the same script.
+Complete import file structure:
+{
+    // To UPDATE data, use UUID, IDNo, or CodeName to match the original data.
+    // If not specifying which project to modify or for adding, set IDNo, UUID, and CodeName to null or empty string.
+
+    "Project_IDNo": null,
+    "Project_UUID": "",
+    "Project_CodeName": "",
+
+    // Project Table (array of objects)
+    "BA_Tables": [
+    ],
+    // Project Feature (single object)
+    "DevProject": {
+    }
+}
+
+
+
+Luca
+
+#Project Table
+Rule:
+1.For BA_Tables, at a minimum, provide "Table_Name" and "Table_Desc".
+2.Other fields will be assigned default values automatically.
+3.For BA_Columns, provide at a minimum "Column_Name".
+4.Other fields will receive default values, defaulting to NVARCHAR(150) data type.
+5.If IDNo field is not provided, it will automatically create an auto-incrementing int KeyColumn.
+6.Always include IDNo when creating a data table.
+7.please always Set DDL_Source_ID to "".
+
+Example of BA_Tables in the import file:
+{
+    "Table_Name": "TestImport1",
+    "Table_Desc": "Test import data table",
+    "BA_Columns": [
+    {
+        "Column_Name": "IDNo"
+    },
+    {
+        "Column_Name": "Normal_column",
+        "Column_Desc": "Regular column"
+    },
+    {
+        "Column_Name": "CustomColumn",
+        "Column_Desc": "Custom attribute column",
+        "Data_Type": "nvarchar",
+        "Length": "150",
+        "DefaultValue": "",
+        "IsKey": "0",
+        "IsNullable": "1",
+        "IsIdentity": "0",
+        "Control_Type": "txt",
+        "Control_ID": "",
+        "DDL_Source_ID": "",
+        "Sort": "2",
+        "Memo": "",
+        "IsShow": "1",
+        "IsView": "",
+        "ForeignKey": ""
+    }]
+}
+
+Luca
+
+#Project Feature Interface
+
+1. please set Sysmodule with 
+    Sysmodule:[
+        {
+            "Name":"登入模組"//the name can only be 登入模組or 基本模組！
+        },
+        {
+            "Name":"基本模組"//the name can only be 登入模組or 基本模組！
+        }
+    ]
+    
+2. "FuncModule" represents functional modules (FM).
+   Logic for adding is currently consistent with the structure in the database.
+   Note: For updating FMV and FMF, provide correct IDNo to match DB data.
+
+3. For Sub FMF under FMF:
+   Structure is as follows:
+   "FuncModule_Function": {
+       "Sub_FuncModule_Function": [
+           // Sub-function data
+       ]
+   }
+
+4. For "Gridview," when creating button functionalities, provide a Sort value for the generated blank data column.
+
+"BindDataColumn": [
+    // Blank columns for buttons
+    {
+        "Column_Name": "",
+        "Sort": "21"
+    },
+]
+
+When adding sub-functions, specify where the button should appear based on Sort.
+
+"Sub_FuncModule_Function": [
+    {
+        "FMF_FunctionType": "modalDetail",
+        "BindDataTable": [
+        // ...omitted
+        ],
+        "Sort": "21"
+    },
+]
+5. Possible FMF_FunctionType values are:
+   customButton,
+   tabPanel,
+   applyFlow,
+   form,
+   formSubmit,
+   listform,
+   gridview,
+   gridview_del,
+   modalEdit,
+   modalDetail,
+   modalSearch
+
+6. Possible FMV_ViewType values are:
+   standard
+   NoHead
+   Form
+   Gridview
+   applyFlow (form approval)
+
+Below is an example structure for "DevProject" in the import file:
+{
+    "SysModule": [
+      { "Name": "登入模組" },//the name can only be 登入模組or 基本模組！ and please add them both!
+      { "Name": "基本模組" }//the name can only be 登入模組or 基本模組！ and please add them both!
+    ],
+
+    "FuncModule": [
+      {
+        "FM_CodeName": "MYTEST",
+        "FM_Name": "Test Function",
+        "FuncModule_View": [
+          {
+            "FMV_ViewType": "Gridview",
+            "FMV_Name": "My Data Table",
+            "FMV_Data": [],
+            "FuncModule_Function": [
+              {
+                "FMF_FunctionType": "gridview",
+                "FMF_Name": "Main Data Table",
+                // Set associated tables
+                "BindDataTable": [
+                  {
+                    "Table_Name": "TestImport1",
+                    "BindDataColumn": [
+                      { "Column_Name": "IDNo" },
+                      { "Column_Name": "TestColumn_1" },
+                      { "Column_Name": "TestColumn_2" },
+                      // ...omitted
+                      {
+                        "Column_Name": "",
+                        "Sort": "21"
+                      },
+                      {
+                        "Column_Name": "",
+                        "Sort": "22"
+                      },
+                      {
+                        "Column_Name": "",
+                        "Sort": "23"
+                      }
+                    ]
+                  }
+                ],
+                "Sub_FuncModule_Function": [
+                  {
+                    "FMF_FunctionType": "modalDetail",
+                    "BindDataTable": [
+                      {
+                        "Table_Name": "TestImport1",
+                        "BindDataColumn": [
+                          { "Column_Name": "TestColumn_1" },
+                          { "Column_Name": "TestColumn_2" },
+                          // ...omitted
+                        ]
+                      }
+                    ],
+                    "Sort": "21" // Specify view button to appear at Sort 21
+                  },
+                  {
+                    "FMF_FunctionType": "modalEdit",
+                    "BindDataTable": [
+                      {
+                        "Table_Name": "TestImport1",
+                        "BindDataColumn": [
+                          { "Column_Name": "TestColumn_1" },
+                          { "Column_Name": "TestColumn_2" },
+                          // ...omitted
+                        ]
+                      }
+                    ],
+                    "Sort": "22" // Specify edit button to appear at Sort 22
+                  },
+                  {
+                    "FMF_FunctionType": "modalSearch",
+                    "BindDataTable": [
+                      {
+                        "Table_Name": "TestImport1",
+                        "BindDataColumn": [
+                          { "Column_Name": "TestColumn_1" },
+                          { "Column_Name": "TestColumn_2" },
+                          { "Column_Name": "TestDDL1" },
+                          { "Column_Name": "TestNum" },
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "IDNo": 1745,
+                    "FMF_FunctionType": "gridview_del",
+                    "BindDataTable": [ { "Table_Name": "TestImport1" } ],
+                    "Sort": "23" // Specify delete button to appear at Sort 23
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
