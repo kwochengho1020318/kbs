@@ -6,9 +6,12 @@ services:
     image: nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./templatesite:/var/opt/templatesite
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.crt:/etc/nginx/nginx.crt
+      - ./nginx/nginx.key:/etc/nginx/nginx.key
     restart: always
     networks:
       - lucanet

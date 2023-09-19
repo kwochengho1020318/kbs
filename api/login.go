@@ -97,12 +97,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		cookie := &http.Cookie{
 			Name:     "dev-cookie",
 			Value:    "",
-			Expires:  time.Now().Add(-24 * time.Hour), // 设置 cookie 的过期时间
+			Expires:  time.Now().Add(-24 * time.Hour), 
 			HttpOnly: true,
 			SameSite: http.SameSiteNoneMode,
-			Secure:   true, // 防止 JavaScript 访问 cookie
-			Domain:   "127.0.0.1",
+			Secure:   true, 
 			Path:     "/",
+			Domain: "https:192.168.2.228",
 		}
 		http.SetCookie(w, cookie)
 		services.ResponseWithText(w, http.StatusOK, "OK")
@@ -119,6 +119,7 @@ func setcookie(w http.ResponseWriter, r *http.Request, token string) {
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true, // 防止 JavaScript 访问 cookie
 		Path:     "/",
+		Domain: "https:192.168.2.228",
 	}
 	http.SetCookie(w, cookie)
 }
