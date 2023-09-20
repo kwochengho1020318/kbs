@@ -57,3 +57,6 @@
 2023-09-19T01:35:10.950Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [196] EdgeTelemetry starting up
 2023-09-19T03:17:48.229Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [187] EdgeTelemetry starting up
 2023-09-19T03:24:46.706Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [188] EdgeTelemetry starting up
+2023-09-19T06:21:57.720Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [187] EdgeTelemetry starting up
+2023-09-19T06:25:17.138Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [188] EdgeTelemetry starting up
+2023-09-19T06:28:11.309Z [dotnet /app/sqlceip/EdgeTelemetry.dll] [190] EdgeTelemetry starting up
