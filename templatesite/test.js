@@ -26,3 +26,16 @@ form.addEventListener('submit', function (e) {
     // 發請求儲存資料**********
     return false;
   });
+  
+  
+const table = document.getElementById('data-table');
+fetch("./api/common/DevUser",{
+      method: "GET",
+      credentials: "include",
+    }).then(response=>response.json())
+  .then(data=>{
+        utils.setTableValue(table, data);
+	new DataTable(`#${table.id}`, {
+        pageResize: true
+});
+});
