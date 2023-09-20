@@ -4,7 +4,7 @@ import (
 	"main/services"
 	"net/http"
 	"strings"
-)
+)	
 
 type ErrorCode struct {
 	Code    int    `json:"code"`
@@ -12,7 +12,7 @@ type ErrorCode struct {
 }
 
 func ReturnDBError(w http.ResponseWriter, err error) {
-
+	
 	switch {
 	//DB not connected
 	case strings.Contains(err.Error(), "connection"):

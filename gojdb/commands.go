@@ -73,12 +73,12 @@ func (db GOJDB) Update(table string, params map[string]interface{}, condition ma
 	for key, element := range params {
 		db.ParaAdd(key, element)
 		altered += fmt.Sprintf(",%s = @%s", key, key)
-		altered = strings.TrimLeft(altered, " ")
-		altered = strings.Replace(altered, ",", "", 1)
 	}
+	altered = strings.TrimLeft(altered, " ")
+	altered = strings.Replace(altered, ",", "", 1)
 	sqlstring += altered
 	sqlstring += " where 1=1 "
-
+	
 	for key, element := range condition {
 		sqlstring += fmt.Sprintf("and %s = @%s", key, key)
 		db.ParaAdd(key, element[0])
