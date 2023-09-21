@@ -1,6 +1,6 @@
 current_datetime=$(date '+%F %T')
 password = "pass"
-
+git pull origin master 
 git add .
 git commit -m "deploy $current_datetime"
 git push origin master
