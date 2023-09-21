@@ -23,10 +23,6 @@ var (
 func SqlConnection() (*sql.DB, *error) {
 	once.Do(func() {
 		myconfig := config.NewConfig("appsettings.json")
-		////mysql
-		//db, err := sql.Open("mysql", "LucaDev:Luca510566@tcp(127.0.0.1:1433)/LucaDev")
-		////mssql
-		//"server=localhost;user=sa;password=Luca510566;port=1433;database=LucaDev"
 		boolValue, _ := strconv.ParseBool(os.Getenv("DOCKER_CONTAINER"))
 		var connString string
 		if boolValue {
