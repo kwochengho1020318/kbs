@@ -17,4 +17,4 @@ if [ $? -eq 0 ]; then
     echo "Commands executed successfully."
 else
     echo "Directory does not exist on the remote server."
-fiecho "deploy finished"
+fi
