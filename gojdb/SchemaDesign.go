@@ -5,7 +5,7 @@ import (
 )
 
 func (db GOJDB) UpdateTable(table map[string]interface{}) {
-
+	db.ParaClear()
 	sqlstring := fmt.Sprintf("Select object_id from sys.objects where name = %s", table["TableName"])
 	result, err := db.Scalar(sqlstring, nil)
 	if err != nil {
