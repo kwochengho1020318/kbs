@@ -31,8 +31,15 @@ func (db GOJDB) NonQuery(sqlstring string, params map[string][]string) int64 {
 		db.ParaAdd(key, element[0])
 	}
 	stmt, _ := db.connection.Prepare(sqlstring)
-	result, _ := stmt.Exec(*db.Params...)
-	rows, _ := result.RowsAffected()
+
+	result, err := stmt.Exec(*db.Params...)
+	if err != nil {
+		panic(err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		panic(err)
+	}
 	return rows
 }
 
@@ -78,7 +85,7 @@ func (db GOJDB) Update(table string, params map[string]interface{}, condition ma
 	altered = strings.Replace(altered, ",", "", 1)
 	sqlstring += altered
 	sqlstring += " where 1=1 "
-	
+
 	for key, element := range condition {
 		sqlstring += fmt.Sprintf("and %s = @%s", key, key)
 		db.ParaAdd(key, element[0])
