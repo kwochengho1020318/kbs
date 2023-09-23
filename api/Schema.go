@@ -59,6 +59,7 @@ func UpdateSchema(w http.ResponseWriter, r *http.Request) {
 	}
 	Tables := params["Tables"].([]interface{})
 	for _, table := range Tables {
+
 		gojdb.UpdateTable(table.(map[string]interface{}))
 	}
 	Views := params["Views"].([]interface{})
