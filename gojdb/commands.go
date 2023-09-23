@@ -25,22 +25,13 @@ func (db GOJDB) Scalar(sqlstring string, params map[string][]string) (string, er
 }
 
 // 傳入sqlstring 與params執行NonQuery
-func (db GOJDB) NonQuery(sqlstring string, params map[string][]string) int64 {
+func (db GOJDB) NonQuery(sqlstring string, params map[string][]string) (int64, error) {
 	db.ParaClear()
 	for key, element := range params {
 		db.ParaAdd(key, element[0])
 	}
-	stmt, _ := db.connection.Prepare(sqlstring)
-
-	result, err := stmt.Exec(*db.Params...)
-	if err != nil {
-		panic(err)
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		panic(err)
-	}
-	return rows
+	rows, err := db.NonQueryWithParameters(sqlstring)
+	return rows, err
 }
 
 // 給table,條件執行刪除

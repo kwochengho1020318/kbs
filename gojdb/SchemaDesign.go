@@ -43,7 +43,7 @@ func NewView(view map[string]interface{}) *View {
 	fmt.Println(temp)
 	return &temp
 }
-func (db *GOJDB) UpdateView(inview map[string]interface{}) {
+func (db *GOJDB) UpdateView(inview map[string]interface{}) error {
 	view := NewView(inview)
 	var ViewCreateString string
 	if view.WhereCondition != "" {
@@ -64,8 +64,11 @@ func (db *GOJDB) UpdateView(inview map[string]interface{}) {
 	}
 
 	fmt.Println(ViewCreateString)
-	db.NonQuery(ViewCreateString, nil)
-
+	_, err := db.NonQuery(ViewCreateString, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (col *Column) AddColumnString() string {
@@ -97,18 +100,27 @@ func NewColumn(colData map[string]interface{}) (*Column, error) {
 	return &column, err
 
 }
-func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName string) {
+func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName string) error {
 	if column.Typ != "int" {
 		overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s(%d)", tableName, column.Name, column.Typ, int(column.Length))
-		fmt.Println(overwritestring)
-		db.NonQuery(overwritestring, nil)
+
+		_, err := db.NonQuery(overwritestring, nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s", tableName, column.Name, column.Typ)
+		_, err := db.NonQuery(overwritestring, nil)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 	db.ParaClear()
 	sqlstring := fmt.Sprintf("Select object_id from sys.tables where name = '%s'", table["TableName"])
-	fmt.Println(sqlstring)
 	result, _ := db.Scalar(sqlstring, nil)
 	tableName := table["TableName"].(string)
 	columns := table["Columns"].([]interface{})
@@ -126,7 +138,10 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 		}
 
 		createTableSQL := fmt.Sprintf("CREATE TABLE %s (%s);", tableName, strings.Join(sqlColumns, ", "))
-		db.NonQuery(createTableSQL, nil)
+		_, err := db.NonQuery(createTableSQL, nil)
+		if err != nil {
+			return err
+		}
 
 	} else {
 		var newColumns []string
@@ -140,8 +155,7 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			}
 			columstring := fmt.Sprintf("Select name,system_type_id,max_length,is_nullable,is_identity from sys.columns where name = '%s' and object_id = %s", column.Name, result)
 			result, _ := db.QueryData(columstring, nil)
-			fmt.Println(result...)
-			fmt.Println(column.AddColumnString())
+
 			//若不存在，新增欄位
 			if len(result) <= 0 {
 				emptycolumn = true
@@ -152,8 +166,10 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 		}
 		if emptycolumn {
 			alterString := fmt.Sprintf("Alter table %s ADD %s;", tableName, strings.Join(newColumns, ", "))
-			fmt.Println(alterString)
-			rowsaffected := db.NonQuery(alterString, nil)
+			rowsaffected, err := db.NonQuery(alterString, nil)
+			if err != nil {
+				return err
+			}
 			fmt.Println(rowsaffected)
 		}
 
