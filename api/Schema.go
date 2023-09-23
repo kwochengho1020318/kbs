@@ -17,7 +17,10 @@ func UpdateTable(w http.ResponseWriter, r *http.Request) {
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}
-	gojdb.UpdateTable(params)
+	err = gojdb.UpdateTable(params)
+	if err != nil {
+		ReturnDBError(w, err)
+	}
 
 }
 func UpdateView(w http.ResponseWriter, r *http.Request) {

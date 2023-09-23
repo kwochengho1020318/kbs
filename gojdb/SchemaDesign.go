@@ -20,11 +20,12 @@ func DbProtocolValid(table map[string]interface{}) (bool, error) {
 }
 
 type Column struct {
-	Name        string  `json:"name"`
-	Typ         string  `json:"type"`
-	Length      float64 `json:"length"`
-	Is_nullable bool    `json:"Is_nullable"`
-	Is_identity bool    `json:"Is_Identity"`
+	Name          string  `json:"name"`
+	Typ           string  `json:"type"`
+	Length        float64 `json:"length"`
+	Is_nullable   bool    `json:"Is_nullable"`
+	Is_identity   bool    `json:"Is_Identity"`
+	Default_Value string  `json:"Default_Value"`
 }
 type View struct {
 	ViewName       string
@@ -76,6 +77,7 @@ func (col *Column) AddColumnString() string {
 	var identitystring string
 	lengthstring := fmt.Sprintf("(%d)", int(col.Length))
 	if !col.Is_nullable {
+
 		notnullstring = "Not Null"
 	}
 	if col.Is_identity {
@@ -101,20 +103,40 @@ func NewColumn(colData map[string]interface{}) (*Column, error) {
 
 }
 func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName string) error {
-	if column.Typ != "int" {
-		overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s(%d)", tableName, column.Name, column.Typ, int(column.Length))
-
-		_, err := db.NonQuery(overwritestring, nil)
+	//修改型別
+	var typestring string
+	var notnullstring string
+	if !column.Is_nullable {
+		sqlstring := fmt.Sprintf("Update %s set %s = %s where %s is null", tableName, column.Name, column.Default_Value, column.Name)
+		_, err := db.NonQuery(sqlstring, nil)
 		if err != nil {
 			return err
 		}
+		notnullstring = "NOT NULL"
+	}
+	if column.Typ != "int" {
+		typestring = fmt.Sprintf("%s(%d)", column.Typ, int(column.Length))
 	} else {
-		overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s", tableName, column.Name, column.Typ)
-		_, err := db.NonQuery(overwritestring, nil)
+		typestring = column.Typ
+	}
+	overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s %s", tableName, column.Name, typestring, notnullstring)
+	fmt.Println(overwritestring)
+	_, err := db.NonQuery(overwritestring, nil)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	//修改default值
+	if column.Default_Value != "" {
+		sqlstring := fmt.Sprintf("Alter Table %s ADD CONSTRAINT DF_%s_%s default %s FOR %s", tableName, tableName, column.Name, column.Default_Value, column.Name)
+		fmt.Println(sqlstring)
+		_, err := db.NonQuery(sqlstring, nil)
 		if err != nil {
+
 			return err
 		}
 	}
+
 	return nil
 }
 

@@ -4,7 +4,7 @@ import (
 	"main/services"
 	"net/http"
 	"strings"
-)	
+)
 
 type ErrorCode struct {
 	Code    int    `json:"code"`
@@ -12,7 +12,7 @@ type ErrorCode struct {
 }
 
 func ReturnDBError(w http.ResponseWriter, err error) {
-	
+
 	switch {
 	//DB not connected
 	case strings.Contains(err.Error(), "connection"):
@@ -26,6 +26,6 @@ func ReturnDBError(w http.ResponseWriter, err error) {
 	case strings.Contains(err.Error(), "duplicate"):
 		services.ResponseWithJson(w, http.StatusBadRequest, ErrorCode{004, "重複的 key"})
 	default:
-		services.ResponseWithJson(w, http.StatusInternalServerError, ErrorCode{999, "unknown"})
+		services.ResponseWithJson(w, http.StatusInternalServerError, ErrorCode{999, err.Error()})
 	}
 }
