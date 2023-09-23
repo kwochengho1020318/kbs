@@ -22,6 +22,7 @@ func init() {
 	register("GET", "/api/userinfo", api.Userinfo, api.CorsHandler)
 	register("POST", "/api/register", api.Register, api.CorsHandler)
 	register("POST", "/api/UpdateTable", api.UpdateTable, api.CorsHandler)
+	register("post", "/api/UpdateView", api.UpdateView, nil)
 }
 
 type Route struct {

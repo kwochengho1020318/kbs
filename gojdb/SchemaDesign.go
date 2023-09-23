@@ -23,24 +23,64 @@ type Column struct {
 	Name        string  `json:"name"`
 	Typ         string  `json:"type"`
 	Length      float64 `json:"length"`
-	Notnull     int     `json:"Notnull"`
-	Is_identity int     `json:"Is_Identity"`
+	Is_nullable bool    `json:"Is_nullable"`
+	Is_identity bool    `json:"Is_Identity"`
+}
+type View struct {
+	ViewName       string
+	SelectColumns  []string
+	FromTables     []string
+	WhereCondition string
+	JoinTable      string
+	JoinCondition  string
+	JoinType       string
+}
+
+func NewView(view map[string]interface{}) *View {
+	viewstr, _ := json.Marshal(view)
+	var temp View
+	json.Unmarshal(viewstr, &temp)
+	fmt.Println(temp)
+	return &temp
+}
+func (db *GOJDB) UpdateView(inview map[string]interface{}) {
+	view := NewView(inview)
+	var ViewCreateString string
+	if view.WhereCondition != "" {
+		ViewCreateString = fmt.Sprintf("CREATE OR ALTER VIEW %s AS\nSELECT %s\nFROM %s\n Where %s;",
+			view.ViewName,
+			strings.Join(view.SelectColumns, ", "),
+			strings.Join(view.FromTables, ", "),
+			view.WhereCondition,
+		)
+	} else {
+		ViewCreateString = fmt.Sprintf("CREATE OR ALTER VIEW %s AS\nSELECT %s\nFROM %s\n %s JOIN %s ON %s;",
+			view.ViewName,
+			strings.Join(view.SelectColumns, ", "),
+			strings.Join(view.FromTables, ", "),
+			view.JoinType,
+			view.JoinTable,
+			view.JoinCondition)
+	}
+
+	fmt.Println(ViewCreateString)
+	db.NonQuery(ViewCreateString, nil)
+
 }
 
 func (col *Column) AddColumnString() string {
 	var notnullstring string
 	var identitystring string
 	lengthstring := fmt.Sprintf("(%d)", int(col.Length))
-	if col.Notnull == 1 {
+	if !col.Is_nullable {
 		notnullstring = "Not Null"
 	}
-	if col.Is_identity == 1 {
-		identitystring = "IDENTITY (1, 1)"
+	if col.Is_identity {
+		identitystring = "IDENTITY (1, 1) Primary Key "
 	}
 	if col.Typ == "int" {
 		lengthstring = ""
 	}
-
 	return fmt.Sprintf("%s %s%s %s %s", col.Name, col.Typ, lengthstring, identitystring, notnullstring)
 }
 func NewColumn(colData map[string]interface{}) (*Column, error) {
@@ -49,6 +89,7 @@ func NewColumn(colData map[string]interface{}) (*Column, error) {
 		return nil, err
 	}
 	var column Column
+	column.Is_nullable = true
 	err = json.Unmarshal(str, &column)
 	if err != nil {
 		return nil, err
@@ -56,28 +97,31 @@ func NewColumn(colData map[string]interface{}) (*Column, error) {
 	return &column, err
 
 }
-func CompareAndUpdateColumn(column *Column, syscolumn []interface{}) {
-
+func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName string) {
+	if column.Typ != "int" {
+		overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s(%d)", tableName, column.Name, column.Typ, int(column.Length))
+		fmt.Println(overwritestring)
+		db.NonQuery(overwritestring, nil)
+	}
 }
 
 func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 	db.ParaClear()
 	sqlstring := fmt.Sprintf("Select object_id from sys.tables where name = '%s'", table["TableName"])
 	fmt.Println(sqlstring)
-	result, err := db.Scalar(sqlstring, nil)
-	if err != nil {
-		panic(err)
-	}
+	result, _ := db.Scalar(sqlstring, nil)
 	tableName := table["TableName"].(string)
 	columns := table["Columns"].([]interface{})
 	var sqlColumns []string
-	if len(result) <= 0 {
+	//若不存在->新增table
+	if result == "" {
 		for _, col := range columns {
 			colData := col.(map[string]interface{})
 			column, err := NewColumn(colData)
 			if err != nil {
 				panic(err)
 			}
+
 			sqlColumns = append(sqlColumns, column.AddColumnString())
 		}
 
@@ -98,11 +142,12 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			result, _ := db.QueryData(columstring, nil)
 			fmt.Println(result...)
 			fmt.Println(column.AddColumnString())
+			//若不存在，新增欄位
 			if len(result) <= 0 {
 				emptycolumn = true
 				newColumns = append(newColumns, column.AddColumnString())
 			} else {
-				CompareAndUpdateColumn(column, result)
+				db.UpdateColumn(column, result[0], tableName)
 			}
 		}
 		if emptycolumn {
