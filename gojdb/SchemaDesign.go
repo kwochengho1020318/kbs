@@ -115,6 +115,7 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 		sqlstring := fmt.Sprintf("Update [%s] set %s = '%s' where %s is null", tableName, column.Name, column.Default_Value, column.Name)
 		_, err := db.NonQuery(sqlstring, nil)
 		if err != nil {
+			fmt.Println(sqlstring)
 			fmt.Println(err)
 			return err
 		}
@@ -129,6 +130,7 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 	overwritestring := fmt.Sprintf("alter table [%s] \nalter column \n %s %s %s", tableName, column.Name, typestring, notnullstring)
 	_, err := db.NonQuery(overwritestring, nil)
 	if err != nil {
+		fmt.Println(overwritestring)
 		fmt.Println(err)
 		return err
 	}
@@ -148,6 +150,7 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 
 func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 	db.ParaClear()
+	updatecolumerr := ""
 	sqlstring := fmt.Sprintf("Select object_id from sys.tables where name = '%s'", table["TableName"])
 	result, _ := db.Scalar(sqlstring, nil)
 	tableName := table["TableName"].(string)
@@ -170,6 +173,7 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 		fmt.Println(createTableSQL)
 		_, err := db.NonQuery(createTableSQL, nil)
 		if err != nil {
+			fmt.Println(createTableSQL)
 			return err
 		}
 
@@ -190,18 +194,29 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 				emptycolumn = true
 				newColumns = append(newColumns, column.AddColumnString())
 			} else {
-				db.UpdateColumn(column, result[0], tableName)
+				err := db.UpdateColumn(column, result[0], tableName)
+				if err != nil {
+					temp := fmt.Sprintf("Updating table %s column %s failed", tableName, column.Name)
+					fmt.Println(err)
+					fmt.Println(temp)
+					updatecolumerr += temp + " \n"
+				}
 			}
 		}
 		if emptycolumn {
 			alterString := fmt.Sprintf("Alter table [%s] ADD %s;", tableName, strings.Join(newColumns, ", "))
 			rowsaffected, err := db.NonQuery(alterString, nil)
 			if err != nil {
+				fmt.Println(alterString)
 				return err
 			}
 			fmt.Println(rowsaffected)
 		}
 
 	}
-	return nil
+	if updatecolumerr == "" {
+		return nil
+	} else {
+		return errors.New(updatecolumerr)
+	}
 }

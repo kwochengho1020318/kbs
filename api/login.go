@@ -17,7 +17,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
-
 		panic(err)
 	}
 	db := gojdb.NewGOJDB()

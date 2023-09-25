@@ -89,10 +89,9 @@ function register(){
         mobile: mobile,
         email: email,
         bureau: bureau,
-          
       }),
     }).then(response=>{
-        if(response.OK){
+        if(response.status==200){
             alert("註冊成功！")
         }else{
             alert("註冊失敗")

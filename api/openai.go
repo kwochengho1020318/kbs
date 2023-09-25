@@ -47,13 +47,12 @@ func codegen(prompt string, history string) string {
 	importlogic := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: string(content)}
 
 	logic := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "This is a set of rules and example formats for JSON. For subsequent responses, please provide answers in the same format as I have given you and meet my custom requirements. Please adhere strictly to the format and rules or instruction."}
-	hint := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "If I directly ask you for an example, please first consider what tables and functional interfaces this system needs. Then, generate JSON based on the tables and functional interfaces you come up with."}
-	ban_question := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "Must:don't include any explanations and introduction in your responses "}
+	ban_question := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "Must:don't include any explanations and introduction in your responses ,your response should be json directly"}
 	rule := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "this is history" + history}
-	a := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleUser, Content: prompt}
+	a := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleUser, Content: "Json:" + prompt + "please convert the database tables and view into the following format"}
 
 	conversation := []openai.ChatCompletionMessage{}
-	conversation = append(conversation, importlogic, logic, hint, ban_question, rule, a)
+	conversation = append(conversation, importlogic, logic, ban_question, rule, a)
 
 	resp, err := client.CreateChatCompletion(
 		context.Background(),

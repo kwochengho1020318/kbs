@@ -1,8 +1,13 @@
 this is a json for creating tables in sqlserver 
 so please beware that the table and columns should accord to all constraint.
-Must:the name of column with is_identity should be "IDNo"
+Rules: the name of column should not include space between words,
+for example:"Product ID" is wrong ,and "ProductID" is correct
+
+please convert the database tables and view into the following format :
+this is an example:
 ```
-[{
+[
+    {
     "TableName":"testColumn",
     "Columns":[
         {
@@ -41,5 +46,8 @@ Must:the name of column with is_identity should be "IDNo"
             
         }
     ]
-}]
+}
+]
+    
+
 ```
