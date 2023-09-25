@@ -17,11 +17,20 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
+
 		panic(err)
 	}
 	db := gojdb.NewGOJDB()
 	encryptedbyte, _ := GetPwd(params["pass"].(string))
 	params["pass"] = string(encryptedbyte)
+	db.ParaClear()
+	db.ParaAdd("user_id", params["user_id"])
+	idexsits, _ := db.Scalar("SELECT 1 from Users where user_id = @user_id", nil)
+
+	if idexsits != "" {
+		services.ResponseWithText(w, http.StatusBadRequest, "user_id重複")
+		return
+	}
 	rowsaffected, err := db.Insert("Users", params)
 	if err != nil {
 		ReturnDBError(w, err)
@@ -97,12 +106,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		cookie := &http.Cookie{
 			Name:     "dev-cookie",
 			Value:    "",
-			Expires:  time.Now().Add(-24 * time.Hour), 
+			Expires:  time.Now().Add(-24 * time.Hour),
 			HttpOnly: true,
 			SameSite: http.SameSiteNoneMode,
-			Secure:   true, 
+			Secure:   true,
 			Path:     "/",
-			Domain: "https:192.168.2.228",
+			Domain:   "https:192.168.2.228",
 		}
 		http.SetCookie(w, cookie)
 		services.ResponseWithText(w, http.StatusOK, "OK")
@@ -119,7 +128,7 @@ func setcookie(w http.ResponseWriter, r *http.Request, token string) {
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true, // 防止 JavaScript 访问 cookie
 		Path:     "/",
-		Domain: "https:192.168.2.228",
+		Domain:   "https:192.168.2.228",
 	}
 	http.SetCookie(w, cookie)
 }

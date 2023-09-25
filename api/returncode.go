@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"main/services"
 	"net/http"
 	"strings"
@@ -12,13 +13,14 @@ type ErrorCode struct {
 }
 
 func ReturnDBError(w http.ResponseWriter, err error) {
-
+	fmt.Println(err)
 	switch {
 	//DB not connected
 	case strings.Contains(err.Error(), "connection"):
 		services.ResponseWithJson(w, http.StatusInternalServerError, ErrorCode{001, "DB not connected"})
 	//syntax error
 	case strings.Contains(err.Error(), "syntax"):
+		fmt.Println(err)
 		services.ResponseWithJson(w, http.StatusInternalServerError, ErrorCode{002, "syntax error"})
 	//invalid column name
 	case strings.Contains(err.Error(), "Invalid column name"):

@@ -82,8 +82,9 @@ func (col *Column) AddColumnString() string {
 	}
 	if col.Is_identity {
 		identitystring = "IDENTITY (1, 1) Primary Key "
+
 	}
-	if col.Typ == "int" {
+	if col.Length == 0 {
 		lengthstring = ""
 	}
 	return fmt.Sprintf("%s %s%s %s %s", col.Name, col.Typ, lengthstring, identitystring, notnullstring)
@@ -96,6 +97,10 @@ func NewColumn(colData map[string]interface{}) (*Column, error) {
 	var column Column
 	column.Is_nullable = true
 	err = json.Unmarshal(str, &column)
+	if column.Typ == "" {
+		column.Typ = "nvarchar"
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -107,20 +112,21 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 	var typestring string
 	var notnullstring string
 	if !column.Is_nullable {
-		sqlstring := fmt.Sprintf("Update %s set %s = %s where %s is null", tableName, column.Name, column.Default_Value, column.Name)
+		sqlstring := fmt.Sprintf("Update [%s] set %s = '%s' where %s is null", tableName, column.Name, column.Default_Value, column.Name)
 		_, err := db.NonQuery(sqlstring, nil)
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
 		notnullstring = "NOT NULL"
 	}
-	if column.Typ != "int" {
+	//int vs nvarchar(50)
+	if column.Length != 0 {
 		typestring = fmt.Sprintf("%s(%d)", column.Typ, int(column.Length))
 	} else {
 		typestring = column.Typ
 	}
-	overwritestring := fmt.Sprintf("alter table %s \nalter column \n %s %s %s", tableName, column.Name, typestring, notnullstring)
-	fmt.Println(overwritestring)
+	overwritestring := fmt.Sprintf("alter table [%s] \nalter column \n %s %s %s", tableName, column.Name, typestring, notnullstring)
 	_, err := db.NonQuery(overwritestring, nil)
 	if err != nil {
 		fmt.Println(err)
@@ -128,7 +134,7 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 	}
 	//修改default值
 	if column.Default_Value != "" {
-		sqlstring := fmt.Sprintf("Alter Table %s ADD CONSTRAINT DF_%s_%s default %s FOR %s", tableName, tableName, column.Name, column.Default_Value, column.Name)
+		sqlstring := fmt.Sprintf("Alter Table [%s] ADD CONSTRAINT DF_%s_%s default %s FOR %s", tableName, tableName, column.Name, column.Default_Value, column.Name)
 		fmt.Println(sqlstring)
 		_, err := db.NonQuery(sqlstring, nil)
 		if err != nil {
@@ -148,6 +154,7 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 	columns := table["Columns"].([]interface{})
 	var sqlColumns []string
 	//若不存在->新增table
+	//fmt.Println(result)
 	if result == "" {
 		for _, col := range columns {
 			colData := col.(map[string]interface{})
@@ -159,7 +166,8 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			sqlColumns = append(sqlColumns, column.AddColumnString())
 		}
 
-		createTableSQL := fmt.Sprintf("CREATE TABLE %s (%s);", tableName, strings.Join(sqlColumns, ", "))
+		createTableSQL := fmt.Sprintf("CREATE TABLE [%s] (%s);", tableName, strings.Join(sqlColumns, ", "))
+		fmt.Println(createTableSQL)
 		_, err := db.NonQuery(createTableSQL, nil)
 		if err != nil {
 			return err
@@ -177,7 +185,6 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			}
 			columstring := fmt.Sprintf("Select name,system_type_id,max_length,is_nullable,is_identity from sys.columns where name = '%s' and object_id = %s", column.Name, result)
 			result, _ := db.QueryData(columstring, nil)
-
 			//若不存在，新增欄位
 			if len(result) <= 0 {
 				emptycolumn = true
@@ -187,7 +194,7 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			}
 		}
 		if emptycolumn {
-			alterString := fmt.Sprintf("Alter table %s ADD %s;", tableName, strings.Join(newColumns, ", "))
+			alterString := fmt.Sprintf("Alter table [%s] ADD %s;", tableName, strings.Join(newColumns, ", "))
 			rowsaffected, err := db.NonQuery(alterString, nil)
 			if err != nil {
 				return err

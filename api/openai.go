@@ -43,7 +43,7 @@ func OpenAIClient() *openai.Client {
 
 func codegen(prompt string, history string) string {
 	client := OpenAIClient()
-	content, _ := os.ReadFile("files/Rules/logic.txt")
+	content, _ := os.ReadFile("files/Rules/newtable.txt")
 	importlogic := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: string(content)}
 
 	logic := openai.ChatCompletionMessage{Role: openai.ChatMessageRoleSystem, Content: "This is a set of rules and example formats for JSON. For subsequent responses, please provide answers in the same format as I have given you and meet my custom requirements. Please adhere strictly to the format and rules or instruction."}

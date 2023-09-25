@@ -25,5 +25,6 @@ require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.27.10 // indirect
 	github.com/redis/go-redis/v9 v9.1.0 // indirect
+	github.com/wI2L/jsondiff v0.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 )

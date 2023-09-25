@@ -1,0 +1,45 @@
+this is a json for creating tables in sqlserver 
+so please beware that the table and columns should accord to all constraint.
+Must:the name of column with is_identity should be "IDNo"
+```
+[{
+    "TableName":"testColumn",
+    "Columns":[
+        {
+            "name":"UnknownColumn",
+            "type":"nvarchar",
+            "length":9
+        },
+
+        {
+            "name":"UnknownColumn1",
+            "type":"int",
+            "Default_Value":"123",
+            "length":9,
+            "Is_Nullable":false
+        },
+        {
+            "name":"Mobile",
+            "type":"nvarchar",
+            "length":51,
+            "IsNullable":true 
+        }
+        ,{
+            "name":"IDNo",
+            "type":"int",
+            "is_identity":true
+            
+        },
+        {
+            "name":"start_date",
+            "type":"date"
+
+        },
+        {
+            "name":"end_date",
+            "type":"date"
+            
+        }
+    ]
+}]
+```

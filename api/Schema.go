@@ -2,24 +2,32 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"main/gojdb"
 	"main/services"
 	"net/http"
+
+	"github.com/wI2L/jsondiff"
 )
 
 func UpdateTable(w http.ResponseWriter, r *http.Request) {
 	gojdb := gojdb.NewGOJDB()
-	var params map[string]interface{}
+	var params []map[string]interface{}
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
+
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}
-	err = gojdb.UpdateTable(params)
-	if err != nil {
-		ReturnDBError(w, err)
+	for _, table := range params {
+
+		err = gojdb.UpdateTable(table)
+		if err != nil {
+			ReturnDBError(w, err)
+			return
+		}
 	}
 
 }
@@ -71,5 +79,22 @@ func UpdateSchema(w http.ResponseWriter, r *http.Request) {
 		gojdb.UpdateStoreProcedure(proc.(map[string]interface{}))
 	}
 	services.ResponseWithText(w, http.StatusOK, "success")
+
+}
+
+func SchemaDifference() {
+	jsonStr1 := `{
+		"name": "Alice",
+		"age": 30,
+		
+	}`
+	jsonStr2 := `{
+		"name": "Alice",
+		
+	}`
+
+	a := jsondiff.Differ{}
+	a.Compare(jsonStr1, jsonStr2)
+	fmt.Println(a.Patch())
 
 }
