@@ -25,7 +25,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	params["pass"] = string(encryptedbyte)
 	db.ParaClear()
 	db.ParaAdd("user_id", params["user_id"])
-	idexsits, _ := db.Scalar("SELECT 1 from Users where user_id = @user_id", nil)
+	idexsits, _ := db.ScalarWithParameters("SELECT 1 from Users where user_id = @user_id")
 
 	if idexsits != "" {
 		services.ResponseWithText(w, http.StatusBadRequest, "user_id重複")
@@ -57,21 +57,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(row) <= 0 {
+		fmt.Println("user_id錯誤")
 		services.ResponseWithText(w, http.StatusUnauthorized, "user_id錯誤")
 		return
 	}
 	usermap := row[0].(map[string]interface{})
 	if usermap["user_id"].(string) == "" {
+		fmt.Println("user_id錯誤")
 		services.ResponseWithText(w, http.StatusUnauthorized, "user_id錯誤")
 	}
 	if ComparePwd(usermap["pass"].(string), pass) {
 		token, err := auth.SetAndGettoken(userID)
 		if err != nil {
+			fmt.Println("密碼錯誤")
 			services.ResponseWithText(w, http.StatusUnauthorized, "密碼錯誤")
 		}
 		setcookie(w, r, token)
 		services.ResponseWithText(w, http.StatusOK, "success")
 	} else {
+		fmt.Println("密碼錯誤")
 		services.ResponseWithJson(w, http.StatusUnauthorized, "密碼錯誤")
 	}
 

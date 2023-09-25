@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"main/auth"
 	"main/services"
 	"net/http"
@@ -17,6 +18,7 @@ func PageGetter(w http.ResponseWriter, r *http.Request) {
 	} else {
 		_, exists, err := auth.CheckTokenExists(usercookie.Value)
 		if err != nil {
+			fmt.Println(err)
 			return
 		}
 		if exists {
@@ -35,11 +37,13 @@ func PageGetter(w http.ResponseWriter, r *http.Request) {
 
 			pagefile, err := os.ReadFile("files/pages/" + page + ".4u")
 			if err != nil {
+				fmt.Println(err)
 				services.ResponseWithJson(w, http.StatusBadRequest, ErrorCode{101, "page not found "})
 				return
 			}
 			services.ResponseWithHtml(w, http.StatusOK, pagefile)
 		} else {
+
 			services.ResponseWithText(w, http.StatusUnauthorized, "token expire")
 			return
 		}

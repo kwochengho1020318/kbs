@@ -17,7 +17,7 @@ func UpdateTable(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
-
+		fmt.Println(err)
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}
@@ -62,6 +62,7 @@ func UpdateSchema(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
+		fmt.Println(err)
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}

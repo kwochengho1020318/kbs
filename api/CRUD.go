@@ -50,15 +50,16 @@ func Query(w http.ResponseWriter, r *http.Request) {
 func Insert(w http.ResponseWriter, r *http.Request) {
 	gojdb := gojdb.NewGOJDB()
 	var params map[string]interface{}
-	
+
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	fmt.Println(params)
 	if err != nil {
+		fmt.Println(err)
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}
-	
+
 	response, err := gojdb.Insert(GetRouteName(r)["table"], params)
 	if err != nil {
 		ReturnDBError(w, err)
@@ -78,13 +79,14 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
-	
+
 	condition := r.URL.Query()
 	gojdb := gojdb.NewGOJDB()
 	var params map[string]interface{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
 	if err != nil {
+		fmt.Println(err)
 		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 		return
 	}
