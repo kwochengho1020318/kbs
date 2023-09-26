@@ -27,9 +27,6 @@ type BAConfig struct {
 		Db         int
 		Mode       string
 	}
-	OpenAI struct {
-		APIKey string
-	}
 }
 
 func NewConfig(configFile string) BAConfig {

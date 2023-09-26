@@ -10,7 +10,6 @@ import (
 var routes []Route
 
 func init() {
-	register("POST", "/api/chat/{phase}", api.Chat, nil)
 	register("POST", "/api/common/{table}", api.Insert, nil)
 	register("GET", "/api/common/{table}", api.Query, nil)
 	register("DELETE", "/api/common/{table}", api.Delete, api.CorsHandler)

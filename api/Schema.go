@@ -29,6 +29,7 @@ func UpdateTable(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	services.ResponseWithText(w, http.StatusOK, "Success")
 
 }
 func UpdateView(w http.ResponseWriter, r *http.Request) {

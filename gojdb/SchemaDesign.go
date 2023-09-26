@@ -26,6 +26,7 @@ type Column struct {
 	Is_nullable   bool    `json:"Is_nullable"`
 	Is_identity   bool    `json:"Is_Identity"`
 	Default_Value string  `json:"Default_Value"`
+	ForeignKey    string  `json:"ForeignKey"`
 }
 type View struct {
 	ViewName       string
@@ -84,6 +85,7 @@ func (col *Column) AddColumnString() string {
 		identitystring = "IDENTITY (1, 1) Primary Key "
 
 	}
+
 	if col.Length == 0 {
 		lengthstring = ""
 	}
@@ -120,6 +122,15 @@ func (db *GOJDB) UpdateColumn(column *Column, syscolumn interface{}, tableName s
 			return err
 		}
 		notnullstring = "NOT NULL"
+	}
+	if column.ForeignKey != "" {
+		sqlstring := fmt.Sprintf("select name from sys.key_constraints where name = 'FK_%s_%s'", tableName, column.Name)
+		result, _ := db.ScalarWithParameters(sqlstring)
+
+		if result == "" {
+			sqlstring := fmt.Sprintf("ALTER TABLE %s ADD CONSTRAINT FK_%s_%s FOREGIGN KEY (%s) REFERENCES %s ", tableName, tableName, column.Name, column.Name, column.ForeignKey)
+			db.NonQueryWithParameters(sqlstring)
+		}
 	}
 	//int vs nvarchar(50)
 	if column.Length != 0 {
@@ -159,6 +170,7 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 	//若不存在->新增table
 	//fmt.Println(result)
 	if result == "" {
+		var constraintkey []string
 		for _, col := range columns {
 			colData := col.(map[string]interface{})
 			column, err := NewColumn(colData)
@@ -167,9 +179,13 @@ func (db GOJDB) UpdateTable(table map[string]interface{}) error {
 			}
 
 			sqlColumns = append(sqlColumns, column.AddColumnString())
+			if column.ForeignKey != "" {
+
+				constraintkey = append(constraintkey, fmt.Sprintf("CONSTRAINT FK_%s_%s FOREIGN KEY (%s) REFERENCES %s on update cascade on delete cascade ", tableName, column.Name, column.Name, column.ForeignKey))
+			}
 		}
 
-		createTableSQL := fmt.Sprintf("CREATE TABLE [%s] (%s);", tableName, strings.Join(sqlColumns, ", "))
+		createTableSQL := fmt.Sprintf("CREATE TABLE [%s] (%s %s);", tableName, strings.Join(sqlColumns, ", "), strings.Join(constraintkey, ", "))
 		fmt.Println(createTableSQL)
 		_, err := db.NonQuery(createTableSQL, nil)
 		if err != nil {
