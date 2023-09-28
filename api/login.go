@@ -67,12 +67,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		services.ResponseWithText(w, http.StatusUnauthorized, "user_id錯誤")
 	}
 	if ComparePwd(usermap["pass"].(string), pass) {
-		token, err := auth.SetAndGettoken(userID)
-		if err != nil {
-			// fmt.Println("密碼錯誤")
-			// services.ResponseWithText(w, http.StatusUnauthorized, "密碼錯誤")
-		}
-		setcookie(w, r, token)
+		//token, err := auth.SetAndGettoken(userID)
+		// if err != nil {
+		// 	// fmt.Println("密碼錯誤")
+		// 	// services.ResponseWithText(w, http.StatusUnauthorized, "密碼錯誤")
+		// }
+		setcookie(w, r, "")
 		services.ResponseWithText(w, http.StatusOK, "success")
 	} else {
 		fmt.Println("密碼錯誤")
