@@ -1,5 +1,5 @@
 FROM golang:latest
-WORKDIR /test1
+WORKDIR /dev
 COPY . .
 ENV DOCKER_CONTAINER=true
 
