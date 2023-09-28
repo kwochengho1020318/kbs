@@ -79,7 +79,7 @@ function register(){
     var mobile = document.getElementById("mobile").value;
     var email = document.getElementById("email").value;
     var bureau = document.getElementById("bureau").value;
-    fetch('/api/register',{
+    fetch('./api/register',{
         method: "POST",
       credentials: "include",
       body: JSON.stringify({
