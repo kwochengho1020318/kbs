@@ -22,6 +22,12 @@ services:
     restart: always
     networks:
       - lucanet
+  lucaserver2:
+    container_name: devlucaserver2
+    image: lucatest
+    restart: always
+    networks:
+      - lucanet
   redis:
     container_name: devredis
     image: redis

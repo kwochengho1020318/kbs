@@ -24,7 +24,6 @@ func init() {
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
 	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
-	//register("GET", "/{page}", api.PageGetter, nil)
 
 }
 
