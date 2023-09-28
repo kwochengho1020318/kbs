@@ -1,4 +1,65 @@
-<script>alert('ok');console.log('執行了script');window.x = 456</script>
+<html>
+  <head>
+    <link rel="stylesheet" href="/assets/css/main.css" />
+  </head>
+  <body>
+    <div class="system_name">
+      <h2>site1</h2>
+    </div>
+    
+    <div class="login_page">
+      <div id="container1">
 
+        <div class="login">  
+          
+          <h3>登入 Login</h3>
 
-<div class="layout-box card-body"><div class="layout-item form"><div class="moving-bar"></div><div class="table-box"><div class="resize-wrapper"><table class="list table table-striped w-100" data-design="true" data-filter="true" data-pagination="true" data-type="table" data-source=""><thead><tr><th>New Header</th><th>New Header</th><th>New Header</th><th>New Header</th></tr></thead><tbody><tr><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-855400" id="column-id-640770">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-940370" id="column-id-815220">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-964340" id="column-id-903600">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-767050" id="column-id-901790">New Text</span></div></form></td></tr></tbody></table></div></div></div><div class="layout-item"><div class="moving-bar"></div><form class="form row g-0 eeee" data-design="true" data-type="form" data-source="abcd"><div class="column-box col-12" data-type="input" draggable="false"><label class="form-label" for="column-id-290950">New Column</label><input type="input" class="form-control" name="column-546900" id="column-id-290950"></div><div class="column-box col-12" data-type="input" draggable="false"><label class="form-label" for="column-id-233150">New Column</label><input type="input" class="form-control" name="column-109740" id="column-id-233150"></div><div class="column-box col-12" data-type="input"><label class="form-label" for="column-id-477240">New Column</label><input type="input" class="form-control" name="column-770860" id="column-id-477240"></div><div class="column-box col-12 dddd" data-type="input"><label class="form-label" for="column-id-579720">New Column</label><input type="input" class="form-control" name="column-720150" id="column-id-579720"></div><div class="column-box col-12" data-type="input" draggable="false"><label class="form-label" for="column-id-659650">New Column</label><input type="input" class="form-control" name="column-111750" id="column-id-659650"></div><div class="column-box col-12" data-type="input" draggable="false"><label class="form-label" for="column-id-693910">New Column</label><input type="input" class="form-control" name="column-569050" id="column-id-693910"></div><div class="column-box col-12" data-type="input"><label class="form-label" for="column-id-512569">New Column</label><input type="input" class="form-control" name="column-496620" id="column-id-512569"></div><div class="column-box col-12" data-type="input"><label class="form-label" for="column-id-169720">New Column</label><input type="input" class="form-control" name="column-368020" id="column-id-169720"></div></form></div><div class="layout-item"><div class="moving-bar"></div><div class="table-box"><div class="resize-wrapper"><table class="list table table-striped w-100" data-design="true" data-filter="true" data-pagination="true" data-type="table" data-source=""><thead><tr><th>New Header</th><th>New Header</th><th>New Header</th><th>New Header</th></tr></thead><tbody><tr><td class=""><form class="td-box row g-0"><div class="column-box col-12" data-type="text" draggable="false"><label class="form-label">New Column</label><span class="form-text" name="column-883720" id="column-id-978180">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-356860" id="column-id-41000">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-414590" id="column-id-676460">New Text</span></div></form></td><td><form class="td-box row g-0"><div class="column-box col-12" data-type="text"><label class="form-label">New Column</label><span class="form-text" name="column-218980" id="column-id-863640">New Text</span></div></form></td></tr></tbody></table></div></div></div></div>
+          
+            <input type="text" id="username" name="username" placeholder="帳號" required>
+            <div class="tab"></div>
+            <input type="text" id="password" name="password" placeholder="密碼" required>
+            <div class="tab"></div>
+            <input type="submit" value="登入" class="submit" onclick="login('./api/login')">
+           
+
+          <h5 onclick="show_hide()">註冊帳號</h5>
+          
+        </div><!-- login end-->
+      </div><!-- container1 end-->
+    </div><!-- login_page end-->
+    
+    <div class="signup_page"
+      <div id="container2">
+
+        <div class="signup">  
+          
+          <h3>註冊 Sign Up</h3>
+
+          
+          <input type="text" id="user_name" name="fullname" placeholder="使用者全名" required>
+          <div class="tab"></div>
+          <input type="text" id="user_id" name="username" placeholder="帳號" required>
+          <div class="tab"></div>
+          <input type="text" id="pass" name="password" placeholder="密碼" required>
+          <div class="tab"></div>
+          <input type="text" id="mobile" name="comfirm_password" placeholder="電話" required>
+          <div class="tab"></div>
+          <input type="text" id="email" name="comfirm_password" placeholder="email" required>
+          <div class="tab"></div>    
+          <div class="tab"></div>
+          <input type="text" id="bureau" name="comfirm_password" placeholder="部門" required>        
+          <input type="submit" value="註冊" class="submit" onclick=register()>
+          
+
+          <h5 onclick="show_hide()">登入帳號</h5>
+          
+        </div><!-- signup end-->
+      </div><!-- container2 end-->
+    </div><!-- signup_page end--> 
+
+    <div id="copyright">
+      <h4>Copyright © 2018 RoseWang All rights reserved</h4><!--因為js，會跑版--> 
+    </div>    
+  </body>
+  <script src="./assets/js/login.js"></script>
+</html>

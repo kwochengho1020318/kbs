@@ -38,6 +38,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	services.ResponseWithText(w, http.StatusOK, "新增成功"+fmt.Sprint(rowsaffected))
 }
 func Login(w http.ResponseWriter, r *http.Request) {
+	setcookie(w, r, "")
 	var params map[string]string
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&params)
@@ -68,8 +69,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if ComparePwd(usermap["pass"].(string), pass) {
 		token, err := auth.SetAndGettoken(userID)
 		if err != nil {
-			fmt.Println("密碼錯誤")
-			services.ResponseWithText(w, http.StatusUnauthorized, "密碼錯誤")
+			// fmt.Println("密碼錯誤")
+			// services.ResponseWithText(w, http.StatusUnauthorized, "密碼錯誤")
 		}
 		setcookie(w, r, token)
 		services.ResponseWithText(w, http.StatusOK, "success")
@@ -125,13 +126,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 func setcookie(w http.ResponseWriter, r *http.Request, token string) {
 	cookie := &http.Cookie{
 		Name:     "dev-cookie",
-		Value:    token,
+		Value:    "B6A95CA92D477CAFBD5DEABC76ED82387E65E23424F1C946966987A76AF78054",
 		Expires:  time.Now().Add(24 * time.Hour), // 设置 cookie 的过期时间
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true, // 防止 JavaScript 访问 cookie
 		Path:     "/",
-		Domain:   "https:192.168.2.228",
 	}
 	http.SetCookie(w, cookie)
 }

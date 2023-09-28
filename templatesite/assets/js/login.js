@@ -38,7 +38,7 @@ function login(url) {
   .then((response) => {
       if (response.status == 200) {
           alert("Success");
-          location.href="./form.html"
+          location.href="./form"
       } else {
           // Handle other status codes if needed
           // You can also check response.statusText for a textual description of the status code.

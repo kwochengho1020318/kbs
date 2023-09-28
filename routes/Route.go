@@ -24,7 +24,7 @@ func init() {
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
 	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
-
+	register("GET", "/{page}", api.PageGetter, nil)
 }
 
 type Route struct {
@@ -48,8 +48,10 @@ func NewRouter() *mux.Router {
 	return r
 }
 func staticrouter(r *mux.Router) {
-	fs := http.FileServer(http.Dir("templatesite/"))
-	r.PathPrefix("/").Handler(http.StripPrefix("/", fs))
+	fs := http.FileServer(http.Dir("templatesite/assets/"))
+	//ds := http.FileServer(http.Dir("templatesite/"))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", fs))
+
 }
 
 func register(method, pattern string, handler http.HandlerFunc, middleware mux.MiddlewareFunc) {
