@@ -17,13 +17,13 @@ func init() {
 	register("GET", "/api/common/{table}/{column}", api.Scalar, nil)
 	register("POST", "/api/login", api.Login, nil)
 	register("POST", "/api/logout", api.Logout, nil)
-	register("GET", "/api/page/{page}", api.GetRender, nil)
-	register("GET", "/api/userinfo", api.Userinfo, api.CorsHandler)
+	//register("GET", "/api/page/{page}", api.PageGetter, nil)
+	//register("GET", "/api/userinfo", api.Userinfo, api.CorsHandler)
 	register("POST", "/api/register", api.Register, api.CorsHandler)
 	register("POST", "/api/UpdateTable", api.UpdateTable, api.CorsHandler)
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
-	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
+	register("POST", "/api/UpdateSchema", api.UpdateSchema, api.AuthHandler)
 	register("GET", "/{page}", api.PageGetter, nil)
 }
 
