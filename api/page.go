@@ -78,7 +78,7 @@ func PageGetter(w http.ResponseWriter, r *http.Request) {
 		services.ResponseWithHtml(w, http.StatusOK, []byte(pagestring))
 	} else {
 
-		services.ResponseWithText(w, http.StatusUnauthorized, "token expire")
+		services.ResponseWithText(w, http.StatusOK, "token expire")
 		return
 	}
 }
