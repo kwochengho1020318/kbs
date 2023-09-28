@@ -37,20 +37,28 @@ func GetRender(w http.ResponseWriter, r *http.Request) {
 		services.ResponseWithHtml(w, http.StatusOK, pagefile)
 	} else {
 
-		services.ResponseWithText(w, http.StatusUnauthorized, "token expire")
+		services.ResponseWithHtml(w, http.StatusOK, []byte("token expired"))
 		return
 	}
 }
+func ExpirePage() (string, error) {
+	pagefile, err := os.ReadFile("templatesite/index.html")
+	if err != nil {
+		return "", err
+	}
+	filestring := string(pagefile)
+	filestring = "<script>alert('token expire')</script>" + filestring
+	return filestring, nil
+}
+
 func PageGetter(w http.ResponseWriter, r *http.Request) {
 
 	usercookie, _ := r.Cookie("dev-cookie")
 	if usercookie == nil {
-		pagefile, err := os.ReadFile("templatesite/index.html")
+		filestring, err := ExpirePage()
 		if err != nil {
-			panic(err)
+			services.ResponseWithHtml(w, http.StatusInternalServerError, []byte(""))
 		}
-		filestring := string(pagefile)
-		filestring = "<script>alert('token expire')</script>" + filestring
 		services.ResponseWithHtml(w, http.StatusOK, []byte(filestring))
 		return
 	}
@@ -78,7 +86,11 @@ func PageGetter(w http.ResponseWriter, r *http.Request) {
 		services.ResponseWithHtml(w, http.StatusOK, []byte(pagestring))
 	} else {
 
-		services.ResponseWithText(w, http.StatusOK, "token expire")
+		filestring, err := ExpirePage()
+		if err != nil {
+			services.ResponseWithHtml(w, http.StatusInternalServerError, []byte(""))
+		}
+		services.ResponseWithHtml(w, http.StatusOK, []byte(filestring))
 		return
 	}
 }
