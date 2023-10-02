@@ -19,6 +19,7 @@ func CallBack(w http.ResponseWriter, r *http.Request) {
 	if params["code"].(string) == "200" {
 		db := gojdb.NewGOJDB()
 		redirectUrl := r.URL.Query().Get("redirectUrl")
+		delete(params, "code")
 		_, err := db.Insert("Token", params)
 		if err != nil {
 			api.ReturnDBError(w, err)
