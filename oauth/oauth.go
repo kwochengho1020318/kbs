@@ -26,6 +26,8 @@ func CallBack(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
+	} else {
+		return
 	}
 
 }
