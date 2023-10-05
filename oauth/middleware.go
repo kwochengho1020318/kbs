@@ -1,7 +1,6 @@
-package api
+package oauth
 
 import (
-	"main/config"
 	"net/http"
 )
 
@@ -16,12 +15,11 @@ func CorsHandler(next http.Handler) http.Handler {
 }
 func AuthHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		config := config.NewConfig("appsettings.json")
 
 		usercookie, _ := r.Cookie("Token")
 		if usercookie == nil {
 
-			http.Redirect(w, r, config.App.LoginSite, http.StatusSeeOther)
+			OauthStart(w, r)
 			return
 		} else {
 			next.ServeHTTP(w, r)

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"main/api"
+	"main/oauth"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,14 +13,14 @@ var routes []Route
 func init() {
 	register("POST", "/api/common/{table}", api.Insert, nil)
 	register("GET", "/api/common/{table}", api.Query, nil)
-	register("DELETE", "/api/common/{table}", api.Delete, api.CorsHandler)
-	register("PUT", "/api/common/{table}", api.Update, api.CorsHandler)
+	register("DELETE", "/api/common/{table}", api.Delete, oauth.CorsHandler)
+	register("PUT", "/api/common/{table}", api.Update, oauth.CorsHandler)
 	register("GET", "/api/common/{table}/{column}", api.Scalar, nil)
 	//register("GET", "/api/page/{page}", api.PageGetter, nil)
-	register("POST", "/api/UpdateTable", api.UpdateTable, api.CorsHandler)
+	register("POST", "/api/UpdateTable", api.UpdateTable, oauth.CorsHandler)
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
-	register("POST", "/api/UpdateSchema", api.UpdateSchema, api.AuthHandler)
+	register("POST", "/api/UpdateSchema", api.UpdateSchema, oauth.AuthHandler)
 	register("GET", "/{page}", api.PageGetter, nil)
 }
 

@@ -1,8 +1,11 @@
 package oauth
 
-import "net/http"
+import (
+	"main/config"
+	"net/http"
+)
 
 func OauthStart(w http.ResponseWriter, r *http.Request) {
-	
-	http.Redirect(w, r, "https://loginsite.com", http.StatusSeeOther)
+	config := config.NewConfig("appsettings.json")
+	http.Redirect(w, r, config.App.LoginSite, http.StatusSeeOther)
 }
