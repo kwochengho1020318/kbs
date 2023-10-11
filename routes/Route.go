@@ -20,8 +20,10 @@ func init() {
 	register("POST", "/api/UpdateTable", api.UpdateTable, oauth.CorsHandler)
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
-	register("POST", "/api/UpdateSchema", api.UpdateSchema, oauth.AuthHandler)
+	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
 	register("GET", "/{page}", api.PageGetter, nil)
+	register("GET", "/", api.PageGetter, nil)
+
 }
 
 type Route struct {
