@@ -16,7 +16,6 @@ func init() {
 	register("DELETE", "/api/common/{table}", api.Delete, oauth.CorsHandler)
 	register("PUT", "/api/common/{table}", api.Update, oauth.CorsHandler)
 	register("GET", "/api/common/{table}/{column}", api.Scalar, nil)
-	//register("GET", "/api/page/{page}", api.PageGetter, nil)
 	register("POST", "/api/UpdateTable", api.UpdateTable, oauth.CorsHandler)
 	register("post", "/api/UpdateView", api.UpdateView, nil)
 	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
