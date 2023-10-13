@@ -2,6 +2,7 @@ package gojdb
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type GOJDB struct {
@@ -33,6 +34,7 @@ func (db GOJDB) NonQueryWithParameters(sqlstring string) (int64, error) {
 	}
 	result, err := stmt.Exec(*db.Params...)
 	if err != nil {
+		fmt.Println(sqlstring)
 		return 0, err
 	}
 
