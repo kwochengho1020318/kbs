@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"main/gojdb"
 	"main/services"
 	"net/http"
@@ -10,28 +11,48 @@ import (
 
 func RssInsert(w http.ResponseWriter, r *http.Request) {
 	db := gojdb.NewGOJDB()
-	var params interface{}
-	//content, _ := io.ReadAll(r.Body)
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&params)
-	if err != nil {
-		//fmt.Println(string(content))
-		fmt.Println(err)
-		services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
-		return
+
+	content, _ := io.ReadAll(r.Body)
+	var isObject bool
+	if string((content)[0]) == "{" {
+		isObject = true
+	} else {
+		isObject = false
 	}
-	log := ""
-	if _, ok := params.(map[string]interface{}); ok {
-		fmt.Println()
-		recursiveParse(params.(map[string]interface{}), "", db, &log)
-	} else if _, ok := params.([]interface{}); ok {
-		for _, v := range params.([]interface{}) {
+	if isObject {
+		var params map[string]interface{}
+
+		err := json.Unmarshal(content, &params)
+		if err != nil {
+			//fmt.Println(string(content))
+			fmt.Println(err)
+			services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
+			return
+		}
+		log := ""
+
+		recursiveParse(params, "", db, &log)
+
+		services.ResponseWithText(w, 200, log)
+	} else {
+		var params []interface{}
+
+		err := json.Unmarshal(content, &params)
+		if err != nil {
+			fmt.Println(string(content))
+			fmt.Println(err)
+			services.ResponseWithText(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		log := ""
+		for _, v := range params {
+
 			recursiveParse(v.(map[string]interface{}), "", db, &log)
 		}
-	} else {
-		services.ResponseWithText(w, 400, "Unknown")
+
+		services.ResponseWithText(w, 200, log)
 	}
-	services.ResponseWithText(w, 200, log)
+
 }
 func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, log *string) {
 	attributes := make(map[string]interface{})
