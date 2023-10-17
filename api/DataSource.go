@@ -16,7 +16,8 @@ import (
 
 func InsertXml(w http.ResponseWriter, r *http.Request) {
 	config := config.NewConfig()
-	url := config.App.ChatUrl + "api/chat/check?Table_Name=a4objects"
+	Table_Name := r.URL.Query().Get("Table_Name")
+	url := config.App.ChatUrl + "api/chat/check?Table_Name=" + Table_Name
 	content, err := io.ReadAll(r.Body)
 	if err != nil {
 		ReturnDBError(w, err)
@@ -44,7 +45,7 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 	for key, value := range lookup {
 		jsonstr = strings.Replace(jsonstr, key, value.(string), -1)
 	}
-	datainsert(w, "a4objects", []byte(jsonstr))
+	datainsert(w, Table_Name, []byte(jsonstr))
 
 }
 

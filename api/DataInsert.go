@@ -64,10 +64,10 @@ func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, 
 	for key, value := range json {
 		if _, ok := value.([]interface{}); ok {
 			for _, entry := range value.([]interface{}) {
-				recursiveParse(entry.(map[string]interface{}), key, db, log)
+				recursiveParse(entry.(map[string]interface{}), table, db, log)
 			}
 		} else if _, ok := value.(map[string]interface{}); ok {
-			recursiveParse(value.(map[string]interface{}), key, db, log)
+			recursiveParse(value.(map[string]interface{}), table, db, log)
 		} else {
 			attributes[key] = value
 		}
