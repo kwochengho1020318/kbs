@@ -12,6 +12,7 @@ type BAConfig struct {
 		Port       int
 		LoginSite  string
 		CookieName string
+		ChatUrl    string
 	}
 	Database struct {
 		Driver    string
@@ -31,8 +32,8 @@ type BAConfig struct {
 	}
 }
 
-func NewConfig(configFile string) BAConfig {
-	confFile, err := os.Open(configFile)
+func NewConfig() BAConfig {
+	confFile, err := os.Open("appsettings.json")
 	if err != nil {
 		panic("Unable to open config file")
 	}

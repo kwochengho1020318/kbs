@@ -11,7 +11,7 @@ func main() {
 	// session.InitManager(
 	// 	session.SetStore(auth.NewClient()),
 	// )
-	myconfig := config.NewConfig("appsettings.json")
+	myconfig := config.NewConfig()
 	// fmt.Println(myconf)
 	router := routes.NewRouter()
 	hostport := fmt.Sprintf("%s:%d", myconfig.App.Url, myconfig.App.Port)

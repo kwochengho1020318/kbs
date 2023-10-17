@@ -6,6 +6,6 @@ import (
 )
 
 func OauthStart(w http.ResponseWriter, r *http.Request) {
-	config := config.NewConfig("appsettings.json")
+	config := config.NewConfig()
 	http.Redirect(w, r, config.App.LoginSite, http.StatusSeeOther)
 }

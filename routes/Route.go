@@ -22,8 +22,8 @@ func init() {
 	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
 	register("GET", "/{page}", api.PageGetter, nil)
 	register("GET", "/", api.PageGetter, nil)
-	register("POST", "/api/DataInsert", api.RssInsert, nil)
-
+	register("POST", "/api/InsertXml", api.InsertXml, nil)
+	register("POST", "/api/InsertExcel", api.InsertExcel, nil)
 }
 
 type Route struct {

@@ -22,7 +22,7 @@ var (
 
 func SqlConnection() (*sql.DB, *error) {
 	once.Do(func() {
-		myconfig := config.NewConfig("appsettings.json")
+		myconfig := config.NewConfig()
 		boolValue, _ := strconv.ParseBool(os.Getenv("DOCKER_CONTAINER"))
 		var connString string
 		if boolValue {
