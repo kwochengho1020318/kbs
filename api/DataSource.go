@@ -42,10 +42,10 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 		ReturnDBError(w, err)
 		return
 	}
-	for key, value := range lookup {
-		jsonstr = strings.Replace(jsonstr, key, value.(string), -1)
-	}
-	datainsert(w, Table_Name, []byte(jsonstr))
+	// for key, value := range lookup {
+	// 	jsonstr = strings.Replace(jsonstr, key, value.(string), -1)
+	// }
+	datainsert(w, Table_Name, []byte(jsonstr), lookup)
 
 }
 

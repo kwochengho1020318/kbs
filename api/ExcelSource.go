@@ -8,7 +8,6 @@ import (
 	"main/config"
 	"main/services"
 	"net/http"
-	"strings"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -45,10 +44,10 @@ func InsertSheet(w http.ResponseWriter, sheet string, Table_Name string) error {
 
 		return err
 	}
-	for key, value := range lookup {
-		sheet = strings.Replace(sheet, key, value.(string), -1)
-	}
-	datainsert(w, Table_Name, []byte(sheet))
+	// for key, value := range lookup {
+	// 	sheet = strings.Replace(sheet, key, value.(string), -1)
+	// }
+	datainsert(w, Table_Name, []byte(sheet), lookup)
 	return nil
 }
 
