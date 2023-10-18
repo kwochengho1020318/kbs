@@ -20,9 +20,11 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 	url := config.App.ChatUrl + "api/chat/check?Table_Name=" + Table_Name
 	content, err := io.ReadAll(r.Body)
 	if err != nil {
+
 		ReturnDBError(w, err)
 		return
 	}
+
 	body := string(content)
 	jsonstr, err := xml_to_json_string(body)
 	if err != nil {
@@ -32,6 +34,7 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 	payload := []byte(jsonstr)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
+
 		ReturnDBError(w, err)
 	}
 	defer resp.Body.Close()
@@ -39,6 +42,8 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 	result, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(result, &lookup)
 	if err != nil {
+		fmt.Println(123)
+
 		ReturnDBError(w, err)
 		return
 	}
