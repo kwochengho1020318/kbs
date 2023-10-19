@@ -18,7 +18,8 @@ func InsertExcel(w http.ResponseWriter, r *http.Request) {
 	if Table_name == "" {
 		services.ResponseWithText(w, 400, "Table_Name not provided ")
 	}
-	Sheets := XlsxToJson(string(filename))
+	Sheets := XlsxToJson("upload/" + string(filename))
+	fmt.Println((Sheets))
 	for _, v := range Sheets {
 		err := InsertSheet(w, v, Table_name)
 		if err != nil {
