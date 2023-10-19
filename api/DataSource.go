@@ -32,18 +32,15 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	payload := []byte(jsonstr)
-	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
-	if err != nil {
-
-		ReturnDBError(w, err)
+	resp, _ := http.Post(url, "application/json", bytes.NewReader(payload))
+	result, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		ReturnDBError(w, errors.New(string(result)))
 	}
 	defer resp.Body.Close()
 	var lookup map[string]interface{}
-	result, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(result, &lookup)
 	if err != nil {
-		fmt.Println(123)
-
 		ReturnDBError(w, err)
 		return
 	}

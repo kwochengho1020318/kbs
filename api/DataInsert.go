@@ -44,6 +44,8 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 	} else {
 		isObject = false
 	}
+	log := ""
+	var rowsaffected int
 	if isObject {
 		var params map[string]interface{}
 
@@ -54,11 +56,10 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 			services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
 			return err
 		}
-		log := ""
 
-		recursiveParse(params, table, db, &log, lookup)
+		recursiveParse(params, table, db, &log, &rowsaffected, lookup)
 
-		services.ResponseWithText(w, 200, log)
+		services.ResponseWithText(w, 200, log+"Rows Affected : "+fmt.Sprint(rowsaffected))
 		return err
 	} else {
 		var params []interface{}
@@ -70,26 +71,26 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 			services.ResponseWithText(w, http.StatusBadRequest, err.Error())
 			return err
 		}
-		log := ""
+
 		for _, v := range params {
 
-			recursiveParse(v.(map[string]interface{}), table, db, &log, lookup)
+			recursiveParse(v.(map[string]interface{}), table, db, &log, &rowsaffected, lookup)
 		}
 
-		services.ResponseWithText(w, 200, log)
+		services.ResponseWithText(w, 200, log+"Rows Affected : "+fmt.Sprint(rowsaffected))
 	}
 	return nil
 }
 
-func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, log *string, lookup map[string]interface{}) {
+func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, log *string, rowsaffected *int, lookup map[string]interface{}) {
 	attributes := make(map[string]interface{})
 	for key, value := range json {
 		if _, ok := value.([]interface{}); ok {
 			for _, entry := range value.([]interface{}) {
-				recursiveParse(entry.(map[string]interface{}), table, db, log, lookup)
+				recursiveParse(entry.(map[string]interface{}), table, db, log, rowsaffected, lookup)
 			}
 		} else if _, ok := value.(map[string]interface{}); ok {
-			recursiveParse(value.(map[string]interface{}), table, db, log, lookup)
+			recursiveParse(value.(map[string]interface{}), table, db, log, rowsaffected, lookup)
 		} else {
 			alteredkey := lookup[key]
 			if alteredkey != nil {
@@ -107,9 +108,10 @@ func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, 
 	_, err := db.Insert(table, attributes)
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println("table not found ,skip inserting " + table)
-		*log += "table not found ,skip inserting " + table + "\n"
+		*log += "warning : one insert failed" + "\n"
 	} else {
-		fmt.Println("insert into " + table)
+		*rowsaffected += 1
+		succdssinfo := "insert success\n"
+		*log += succdssinfo
 	}
 }
