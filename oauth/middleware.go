@@ -19,7 +19,6 @@ func AuthHandler(next http.Handler) http.Handler {
 
 		usercookie, _ := r.Cookie("Token")
 		if usercookie == nil {
-
 			OauthStart(w, r)
 			return
 		} else {
@@ -30,7 +29,6 @@ func AuthHandler(next http.Handler) http.Handler {
 				OauthStart(w, r)
 				return
 			} else {
-
 				next.ServeHTTP(w, r)
 				return
 			}
