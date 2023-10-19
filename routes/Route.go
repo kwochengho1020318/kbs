@@ -2,6 +2,7 @@ package routes
 
 import (
 	"main/api"
+	"main/oauth"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -17,7 +18,7 @@ func init() {
 	register("GET", "/api/common/{table}/{column}", api.Scalar, nil)
 	register("POST", "/api/UpdateTable", api.UpdateTable, nil)
 	register("post", "/api/UpdateView", api.UpdateView, nil)
-	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, nil)
+	register("POST", "/api/UpdateStoredProcedure", api.UpdateStoredProcedure, oauth.AuthHandler)
 	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
 	register("GET", "/{page}", api.PageGetter, nil)
 	register("GET", "/", api.PageGetter, nil)

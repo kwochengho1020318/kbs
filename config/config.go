@@ -13,6 +13,8 @@ type BAConfig struct {
 		LoginSite  string
 		CookieName string
 		ChatUrl    string
+		User       string
+		Pid        string
 	}
 	Database struct {
 		Driver    string

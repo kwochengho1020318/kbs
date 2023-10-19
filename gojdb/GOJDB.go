@@ -16,6 +16,7 @@ func NewGOJDB() *GOJDB {
 
 	a := make([]interface{}, 0)
 	jdb.Params = &a
+	jdb.ParaClear()
 	return jdb
 }
 func (db GOJDB) ParaClear() {

@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"main/gojdb"
 	"net/http"
 )
 
@@ -22,7 +23,17 @@ func AuthHandler(next http.Handler) http.Handler {
 			OauthStart(w, r)
 			return
 		} else {
-			next.ServeHTTP(w, r)
+			db := gojdb.NewGOJDB()
+			db.ParaAdd("Token", usercookie.Value)
+			v, _ := db.Scalar("Select User_ID from Token where Token = @Token", nil)
+			if v == "" {
+				OauthStart(w, r)
+				return
+			} else {
+
+				next.ServeHTTP(w, r)
+				return
+			}
 		}
 	})
 }

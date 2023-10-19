@@ -16,7 +16,6 @@ func (db GOJDB) QueryData(sqlstring string, params map[string][]string) ([]inter
 
 // 給定sqlstring與條件，返回string
 func (db GOJDB) Scalar(sqlstring string, params map[string][]string) (string, error) {
-	db.ParaClear()
 	for key, element := range params {
 		db.ParaAdd(key, element[0])
 	}
