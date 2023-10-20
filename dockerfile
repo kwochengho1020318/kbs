@@ -15,5 +15,6 @@ COPY --from=builder /go/ai4u/appsettings.json .
 COPY --from=builder /go/ai4u/cert.pem .
 COPY --from=builder /go/ai4u/key.pem .
 COPY --from=builder /go/ai4u/templatesite ./templatesite
+COPY --from=builder /go/ai4u/upload ./upload
 EXPOSE 3000
 ENTRYPOINT ["./main"]
