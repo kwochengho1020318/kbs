@@ -31,14 +31,13 @@ func getlookup(inputstr string, Table_Name string) (map[string]interface{}, erro
 }
 
 // 給定json string 及table ,新增資料
-func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[string]interface{}) error {
+func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[string]interface{}) (string, error) {
 	db := gojdb.NewGOJDB()
 	var isObject bool
 	if table == "" {
 		services.ResponseWithText(w, 400, "Table_Name not provided")
 	}
 	//unescaped, _ := strconv.Unquote(string(content))
-	fmt.Println(string(content))
 	if string((content)[0]) == "{" {
 		isObject = true
 	} else {
@@ -53,23 +52,22 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 		if err != nil {
 			//fmt.Println(string(content))
 			fmt.Println(err)
-			services.ResponseWithText(w, http.StatusBadRequest, "malformed json data")
-			return err
+			log += "malformed json \n"
+			return log, err
 		}
 
 		recursiveParse(params, table, db, &log, &rowsaffected, lookup)
 
-		services.ResponseWithText(w, 200, log+"Rows Affected : "+fmt.Sprint(rowsaffected))
-		return err
+		log += "Rows Affected : " + fmt.Sprint(rowsaffected) + "\n"
+		return log, err
 	} else {
 		var params []interface{}
 
 		err := json.Unmarshal(content, &params)
 		if err != nil {
-			fmt.Println(string(content))
-			fmt.Println(err)
-			services.ResponseWithText(w, http.StatusBadRequest, err.Error())
-			return err
+
+			log += err.Error() + "\n"
+			return log, err
 		}
 
 		for _, v := range params {
@@ -77,9 +75,10 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 			recursiveParse(v.(map[string]interface{}), table, db, &log, &rowsaffected, lookup)
 		}
 
-		services.ResponseWithText(w, 200, log+"Rows Affected : "+fmt.Sprint(rowsaffected))
+		log += "Rows Affected : " + fmt.Sprint(rowsaffected) + "\n"
+		return log, nil
 	}
-	return nil
+
 }
 
 func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, log *string, rowsaffected *int, lookup map[string]interface{}) {
@@ -94,7 +93,6 @@ func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, 
 		} else {
 			alteredkey := lookup[key]
 			if alteredkey != nil {
-
 				attributes[alteredkey.(string)] = value
 			} else {
 				attributes[key] = value

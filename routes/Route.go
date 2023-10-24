@@ -26,6 +26,7 @@ func init() {
 	register("POST", "/api/InsertCsv", api.InsertCsv, nil)
 	register("POST", "/api/Upload", api.Upload, nil)
 	register("POST", "/api/InsertHtml", api.InsertHtml, nil)
+	register("POST", "/api/InsertCsv", api.InsertCsv, nil)
 }
 
 type Route struct {

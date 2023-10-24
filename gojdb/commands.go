@@ -46,7 +46,6 @@ func (db GOJDB) Delete(table string, params map[string][]string) (int64, error) 
 
 // 給table,參數執行insert
 func (db GOJDB) Insert(table string, params map[string]interface{}) (int64, error) {
-	db.ParaClear()
 	columns := []string{}
 	values := []string{}
 

@@ -1,90 +1,70 @@
 package api
 
 import (
-	"bytes"
-	"encoding/csv"
-	"encoding/json"
-	"errors"
+	"context"
 	"fmt"
 	"io"
+	"main/services"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strconv"
+	"regexp"
 	"strings"
+
+	"github.com/tmc/langchaingo/documentloaders"
 )
 
 func InsertCsv(w http.ResponseWriter, r *http.Request) {
+	body, _ := io.ReadAll(r.Body)
+	filename := string(body)
 	Table_Name := r.URL.Query().Get("Table_Name")
-	content, err := io.ReadAll(r.Body)
+	f, err := os.Open("upload/" + filename)
 	if err != nil {
 		ReturnDBError(w, err)
 		return
 	}
-	body := string(content)
-	lookup, err := getlookup(body, Table_Name)
+	csv := documentloaders.NewCSV(f)
+	ctx := context.Background()
+	documents, err := csv.Load(ctx)
 	if err != nil {
 		ReturnDBError(w, err)
+		return
 	}
-	datainsert(w, Table_Name, []byte(body), lookup)
-}
-
-func ReadCsvFile(path string) ([]byte, string, error) {
-	csvFile, err := os.Open(path)
-
+	lookup, err := getlookup(documents[0].PageContent, Table_Name)
+	fmt.Println("error")
+	fmt.Println(lookup)
 	if err != nil {
-		return nil, "", errors.New("the file is not found || wrong root")
+		ReturnDBError(w, err)
+		return
 	}
-	defer csvFile.Close()
+	var results string
+	for _, document := range documents {
+		rawString := document.PageContent
+		rawString = strings.ReplaceAll(rawString, "\\n", "\n")
 
-	reader := csv.NewReader(csvFile)
-	content, _ := reader.ReadAll()
+		// 使用正则表达式分割成键值对
+		pattern := `(\w+): (.+?)\n`
+		re := regexp.MustCompile(pattern)
+		matches := re.FindAllStringSubmatch(rawString, -1)
 
-	if len(content) < 1 {
-		return nil, "", fmt.Errorf("something wrong, the file maybe empty or length of the lines are not the same")
-	}
-
-	headersArr := make([]string, 0)
-	for _, headE := range content[0] {
-		headersArr = append(headersArr, headE)
-	}
-
-	//Remove the header row
-	content = content[1:]
-
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
-	for i, d := range content {
-		buffer.WriteString("{")
-		for j, y := range d {
-			buffer.WriteString(`"` + headersArr[j] + `":`)
-			_, fErr := strconv.ParseFloat(y, 32)
-			_, bErr := strconv.ParseBool(y)
-			if fErr == nil {
-				buffer.WriteString(y)
-			} else if bErr == nil {
-				buffer.WriteString(strings.ToLower(y))
-			} else {
-				buffer.WriteString((`"` + y + `"`))
-			}
-			//end of property
-			if j < len(d)-1 {
-				buffer.WriteString(",")
-			}
-
+		// 创建一个 map 存储键值对
+		data := make(map[string]string)
+		for _, match := range matches {
+			key := match[1]
+			value := match[2]
+			data[key] = value
 		}
-		//end of object of the array
-		buffer.WriteString("}")
-		if i < len(content)-1 {
-			buffer.WriteString(",")
-		}
+		// 将 map 转换为 JSON
+		// jsonData, err := json.Marshal(data)
+		// if err != nil {
+		// 	ReturnDBError(w, err)
+		// 	return
+		// }
+		// result, err := datainsert(w, Table_Name, jsonData, lookup)
+		// if err != nil {
+		// 	ReturnDBError(w, err)
+		// 	return
+		// }
+		//results += result + "\n"
 	}
-
-	buffer.WriteString(`]`)
-	rawMessage := json.RawMessage(buffer.String())
-	x, _ := json.MarshalIndent(rawMessage, "", "  ")
-	newFileName := filepath.Base(path)
-	newFileName = newFileName[0:len(newFileName)-len(filepath.Ext(newFileName))] + ".json"
-	r := filepath.Dir(path)
-	return x, filepath.Join(r, newFileName), nil
+	services.ResponseWithText(w, 200, results)
 }
