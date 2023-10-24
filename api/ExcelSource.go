@@ -20,22 +20,25 @@ func InsertExcel(w http.ResponseWriter, r *http.Request) {
 	}
 	Sheets := XlsxToJson("upload/" + string(filename))
 	fmt.Println((Sheets))
+	var results string
 	for _, v := range Sheets {
-		err := InsertSheet(w, v, Table_name)
+		res, err := InsertSheet(w, v, Table_name)
 		if err != nil {
 			ReturnDBError(w, err)
 			return
 		}
+		results += res + "\n"
 	}
+	services.ResponseWithText(w, 200, results)
 }
 
-func InsertSheet(w http.ResponseWriter, sheet string, Table_Name string) error {
+func InsertSheet(w http.ResponseWriter, sheet string, Table_Name string) (string, error) {
 	config := config.NewConfig()
 	url := config.App.ChatUrl + "api/chat/check?Table_Name=" + Table_Name
 	payload := []byte(sheet)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 	var lookup map[string]interface{}
@@ -43,13 +46,16 @@ func InsertSheet(w http.ResponseWriter, sheet string, Table_Name string) error {
 	err = json.Unmarshal(result, &lookup)
 	if err != nil {
 
-		return err
+		return "", err
 	}
 	// for key, value := range lookup {
 	// 	sheet = strings.Replace(sheet, key, value.(string), -1)
 	// }
-	datainsert(w, Table_Name, []byte(sheet), lookup)
-	return nil
+	res, err := datainsert(w, Table_Name, []byte(sheet), lookup)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
 }
 
 func XlsxToJson(filename string) []string {

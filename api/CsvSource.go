@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"main/services"
@@ -36,7 +37,7 @@ func InsertCsv(w http.ResponseWriter, r *http.Request) {
 		ReturnDBError(w, err)
 		return
 	}
-	var results string
+	var jsons []map[string]interface{}
 	for _, document := range documents {
 		rawString := document.PageContent
 		rawString = strings.ReplaceAll(rawString, "\\n", "\n")
@@ -47,24 +48,26 @@ func InsertCsv(w http.ResponseWriter, r *http.Request) {
 		matches := re.FindAllStringSubmatch(rawString, -1)
 
 		// 创建一个 map 存储键值对
-		data := make(map[string]string)
+		data := make(map[string]interface{})
 		for _, match := range matches {
 			key := match[1]
 			value := match[2]
 			data[key] = value
 		}
-		// 将 map 转换为 JSON
-		// jsonData, err := json.Marshal(data)
-		// if err != nil {
-		// 	ReturnDBError(w, err)
-		// 	return
-		// }
-		// result, err := datainsert(w, Table_Name, jsonData, lookup)
-		// if err != nil {
-		// 	ReturnDBError(w, err)
-		// 	return
-		// }
-		//results += result + "\n"
+
+		jsons = append(jsons, data)
+
 	}
-	services.ResponseWithText(w, 200, results)
+	jsonData, err := json.Marshal(jsons)
+	if err != nil {
+		ReturnDBError(w, err)
+		return
+	}
+	result, err := datainsert(w, Table_Name, jsonData, lookup)
+	if err != nil {
+		ReturnDBError(w, err)
+		return
+	}
+
+	services.ResponseWithText(w, 200, result)
 }

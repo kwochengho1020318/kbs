@@ -3,11 +3,11 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"main/config"
 	"main/gojdb"
-	"main/services"
 	"net/http"
 )
 
@@ -30,12 +30,11 @@ func getlookup(inputstr string, Table_Name string) (map[string]interface{}, erro
 	return lookup, nil
 }
 
-// 給定json string 及table ,新增資料
 func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[string]interface{}) (string, error) {
 	db := gojdb.NewGOJDB()
 	var isObject bool
 	if table == "" {
-		services.ResponseWithText(w, 400, "Table_Name not provided")
+		return "", errors.New("Table_Name not provided ")
 	}
 	//unescaped, _ := strconv.Unquote(string(content))
 	if string((content)[0]) == "{" {
@@ -51,8 +50,7 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 		err := json.Unmarshal(content, &params)
 		if err != nil {
 			//fmt.Println(string(content))
-			fmt.Println(err)
-			log += "malformed json \n"
+			log += "malformed json\n"
 			return log, err
 		}
 
@@ -65,7 +63,6 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 
 		err := json.Unmarshal(content, &params)
 		if err != nil {
-
 			log += err.Error() + "\n"
 			return log, err
 		}
@@ -76,13 +73,14 @@ func datainsert(w http.ResponseWriter, table string, content []byte, lookup map[
 		}
 
 		log += "Rows Affected : " + fmt.Sprint(rowsaffected) + "\n"
-		return log, nil
 	}
-
+	//fmt.Println(log)
+	return log, nil
 }
 
 func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, log *string, rowsaffected *int, lookup map[string]interface{}) {
 	attributes := make(map[string]interface{})
+	db.ParaClear()
 	for key, value := range json {
 		if _, ok := value.([]interface{}); ok {
 			for _, entry := range value.([]interface{}) {
@@ -93,6 +91,7 @@ func recursiveParse(json map[string]interface{}, table string, db *gojdb.GOJDB, 
 		} else {
 			alteredkey := lookup[key]
 			if alteredkey != nil {
+
 				attributes[alteredkey.(string)] = value
 			} else {
 				attributes[key] = value
