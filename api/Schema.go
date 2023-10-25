@@ -6,8 +6,6 @@ import (
 	"main/gojdb"
 	"main/services"
 	"net/http"
-
-	"github.com/wI2L/jsondiff"
 )
 
 func UpdateTable(w http.ResponseWriter, r *http.Request) {
@@ -83,22 +81,5 @@ func UpdateSchema(w http.ResponseWriter, r *http.Request) {
 		gojdb.UpdateStoreProcedure(proc.(map[string]interface{}))
 	}
 	services.ResponseWithText(w, http.StatusOK, "success")
-
-}
-
-func SchemaDifference() {
-	jsonStr1 := `{
-		"name": "Alice",
-		"age": 30,
-		
-	}`
-	jsonStr2 := `{
-		"name": "Alice",
-		
-	}`
-
-	a := jsondiff.Differ{}
-	a.Compare(jsonStr1, jsonStr2)
-	fmt.Println(a.Patch())
 
 }

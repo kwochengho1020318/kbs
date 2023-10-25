@@ -9,16 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ExpirePage() (string, error) {
-	pagefile, err := os.ReadFile("templatesite/index.html")
-	if err != nil {
-		return "", err
-	}
-	filestring := string(pagefile)
-	filestring = "<script>alert('token expire')</script>" + filestring
-	return filestring, nil
-}
-
 func PageGetter(w http.ResponseWriter, r *http.Request) {
 
 	page := mux.Vars(r)["page"]
