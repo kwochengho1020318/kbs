@@ -54,9 +54,7 @@ func InsertCsv(w http.ResponseWriter, r *http.Request) {
 			value := match[2]
 			data[key] = value
 		}
-
 		jsons = append(jsons, data)
-
 	}
 	jsonData, err := json.Marshal(jsons)
 	if err != nil {
