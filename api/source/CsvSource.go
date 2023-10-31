@@ -1,10 +1,11 @@
-package api
+package source
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"main/api"
 	"main/services"
 	"net/http"
 	"os"
@@ -20,21 +21,21 @@ func InsertCsv(w http.ResponseWriter, r *http.Request) {
 	Table_Name := r.URL.Query().Get("Table_Name")
 	f, err := os.Open("upload/" + filename)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	csv := documentloaders.NewCSV(f)
 	ctx := context.Background()
 	documents, err := csv.Load(ctx)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	lookup, err := getlookup(documents[0].PageContent, Table_Name)
 	fmt.Println("error")
 	fmt.Println(lookup)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	var jsons []map[string]interface{}
@@ -58,12 +59,12 @@ func InsertCsv(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonData, err := json.Marshal(jsons)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	result, err := datainsert(w, Table_Name, jsonData, lookup)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 

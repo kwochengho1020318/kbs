@@ -1,10 +1,11 @@
-package api
+package source
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
+	"main/api"
 	"main/config"
 	"main/services"
 	"net/http"
@@ -24,7 +25,7 @@ func InsertExcel(w http.ResponseWriter, r *http.Request) {
 	for _, v := range Sheets {
 		res, err := InsertSheet(w, v, Table_name)
 		if err != nil {
-			ReturnDBError(w, err)
+			api.ReturnDBError(w, err)
 			return
 		}
 		results += res + "\n"

@@ -1,3 +1,4 @@
 sqlserver
 .DS_Store
 upload/*
+appsettings.json

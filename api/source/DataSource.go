@@ -1,4 +1,4 @@
-package api
+package source
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"main/api"
 	"main/config"
 	"net/http"
 	"regexp"
@@ -21,27 +22,27 @@ func InsertXml(w http.ResponseWriter, r *http.Request) {
 	content, err := io.ReadAll(r.Body)
 	if err != nil {
 
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 
 	body := string(content)
 	jsonstr, err := xml_to_json_string(body)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	payload := []byte(jsonstr)
 	resp, _ := http.Post(url, "application/json", bytes.NewReader(payload))
 	result, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 {
-		ReturnDBError(w, errors.New(string(result)))
+		api.ReturnDBError(w, errors.New(string(result)))
 	}
 	defer resp.Body.Close()
 	var lookup map[string]interface{}
 	err = json.Unmarshal(result, &lookup)
 	if err != nil {
-		ReturnDBError(w, err)
+		api.ReturnDBError(w, err)
 		return
 	}
 	// for key, value := range lookup {

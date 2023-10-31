@@ -2,6 +2,7 @@ package routes
 
 import (
 	"main/api"
+	"main/api/source"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -21,9 +22,9 @@ func init() {
 	register("POST", "/api/UpdateSchema", api.UpdateSchema, nil)
 	register("GET", "/{page}", api.PageGetter, nil)
 	register("GET", "/", api.PageGetter, nil)
-	register("POST", "/api/InsertXml", api.InsertXml, nil)
-	register("POST", "/api/InsertExcel", api.InsertExcel, nil)
-	register("POST", "/api/InsertCsv", api.InsertCsv, nil)
+	register("POST", "/api/InsertXml", source.InsertXml, nil)
+	register("POST", "/api/InsertExcel", source.InsertExcel, nil)
+	register("POST", "/api/InsertCsv", source.InsertCsv, nil)
 	register("POST", "/api/Upload", api.Upload, nil)
 }
 
