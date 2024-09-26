@@ -5,6 +5,7 @@ import (
 	"main/config"
 	"main/routes"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -14,8 +15,8 @@ func main() {
 	myconfig := config.NewConfig()
 	// fmt.Println(myconf)
 	router := routes.NewRouter()
-	hostport := fmt.Sprintf("%s:%d", myconfig.App.Url, myconfig.App.Port)
-
+	envPort := os.Getenv("ASPNETCORE_PORT")
+	hostport := fmt.Sprintf("%s:%s", myconfig.App.Url, envPort)
 	http.ListenAndServeTLS(hostport, "cert.pem", "key.pem", router)
 
 }

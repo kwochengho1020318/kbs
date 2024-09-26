@@ -8,13 +8,15 @@ import (
 
 type BAConfig struct {
 	App struct {
-		Url        string
-		Port       int
-		LoginSite  string
-		CookieName string
-		ChatUrl    string
-		User       string
-		Pid        string
+		Url          string
+		Port         int
+		LoginSite    string
+		CookieName   string
+		ChatUrl      string
+		User         string
+		Pid          string
+		UploadFolder string
+		LogPath      string
 	}
 	Database struct {
 		Driver    string
